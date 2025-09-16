@@ -207,7 +207,3 @@ If you find this template helpful, you can support development:
 
 - Buy me a coffee: https://www.buymeacoffee.com/aherendeen
 - Sponsor on GitHub: https://github.com/sponsors/aherendeen
-
-   </div>
-   <iframe src="https://github.com/sponsors/aherendeen/card" title="Sponsor aherendeen" height="225" width="600" style="border: 0;"></iframe>
-</div>
