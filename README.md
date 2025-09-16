@@ -6,8 +6,6 @@
 
 A minimal and professional theme for personal blog sites, built with the Astro framework and latest web technologies.
 
-This repository serves as a comprehensive template for creating your own personal blog. It provides a solid foundation with modern development practices, optimized performance, and professional design patterns.
-
 ![Theme Screenshot](./screenshot.jpg)
 
 ## Features
@@ -17,10 +15,10 @@ This repository serves as a comprehensive template for creating your own persona
 - **Dark Mode Support**: Automatic dark/light mode with user preference detection
 - **Responsive Design**: Mobile-first approach that works on all devices
 - **Image Optimization**: Automatic image optimization during build process
-- **Content Management**: MDX support for rich content with React components
+- **Content Management**: MDX/Markdown support for rich content and component composition
 - **SEO Optimization**: Built-in SEO features with proper meta tags and structured data
 - **RSS Feed**: Automatic RSS feed generation for content syndication
-- **Accessibility**: WCAG compliant design with proper semantic HTML
+- **Accessibility**: WCAG-conscious design with semantic HTML
 - **TypeScript**: Full TypeScript support for better development experience
 - **Automated Workflows**: GitHub Actions for linting, formatting, and type checking
 
@@ -203,11 +201,13 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ---
 
-<div style="display:flex; gap:12px; align-items:center;">
-	<div>
-		Built with Astro
-	</div>
-   <div>
-      <a href="https://www.buymeacoffee.com/aherendeen" target="_blank" rel="noopener noreferrer nofollow">Support the original author</a>
+## Support
+
+If you find this template helpful, you can support development:
+
+- Buy me a coffee: https://www.buymeacoffee.com/aherendeen
+- Sponsor on GitHub: https://github.com/sponsors/aherendeen
+
    </div>
+   <iframe src="https://github.com/sponsors/aherendeen/card" title="Sponsor aherendeen" height="225" width="600" style="border: 0;"></iframe>
 </div>
