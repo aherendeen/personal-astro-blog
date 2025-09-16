@@ -1,0 +1,26 @@
+---
+interface Props {
+	date: Date | number | string | null | undefined
+}
+
+const dateVal = Astro.props.date as unknown
+let parsed: Date | null = null
+if (dateVal instanceof Date) {
+	parsed = dateVal
+} else if (typeof dateVal === 'number' && !Number.isNaN(dateVal)) {
+	parsed = new Date(dateVal)
+} else if (typeof dateVal === 'string' && dateVal.trim && dateVal.trim()) {
+	parsed = new Date(dateVal)
+}
+const isValid = parsed instanceof Date && !Number.isNaN(parsed.getTime())
+const iso = isValid ? (parsed as Date).toISOString() : ''
+const formatted = isValid
+	? (parsed as Date).toLocaleDateString(undefined, {
+			year: 'numeric',
+			month: 'long',
+			day: 'numeric',
+		})
+	: ''
+---
+
+{isValid ? <time datetime={iso}>{formatted}</time> : ''}

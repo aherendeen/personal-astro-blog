@@ -1,0 +1,49 @@
+---
+import type { HTMLAttributes } from 'astro/types'
+import { SITE_BASE } from '../consts'
+
+type Props = HTMLAttributes<'a'>
+
+const { href, class: className, ...props } = Astro.props
+
+// Compute a normalized pathname that takes SITE_BASE into account.
+const rawPath: string =
+	typeof Astro.url?.pathname === 'string' ? Astro.url.pathname : '/'
+const base: string = SITE_BASE || ''
+
+function stripBase(path: string): string {
+	if (base && path.startsWith(base)) {
+		return path.slice(base.length) || '/'
+	}
+	return path
+}
+
+const pathname: string = stripBase(rawPath)
+
+function normalizePath(p: string | URL | null | undefined): string {
+	if (!p) {
+		return '/'
+	}
+	const s = String(p)
+	const withLeading = s.startsWith('/') ? s : `/${s}`
+	return withLeading.replace(/\/$/, '') || '/'
+}
+
+const isActive =
+	normalizePath(href) === normalizePath(pathname) ||
+	(pathname.startsWith('/blog') && normalizePath(href) === '/blog')
+---
+
+<a href={href} class:list={[className, { active: isActive }]} {...props}>
+	<slot />
+</a>
+<style>
+	@reference "../styles/global.css";
+
+	a {
+		@apply underline-offset-4 hover:underline relative decoration-2;
+	}
+	a.active {
+		@apply underline text-primary dark:text-primary-dark;
+	}
+</style>

@@ -1,0 +1,169 @@
+---
+import type { MarkdownHeading, ImageMetadata } from 'astro'
+import FormattedDate from '../components/FormattedDate.astro'
+import TableOfContents from '../components/TableOfContents.astro'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+
+dayjs.extend(utc)
+
+// Explicit props shape (avoid using TS generics in .astro to prevent parser issues)
+type Props = {
+	title?: string
+	description?: string
+	pubDate?: string | Date
+	updatedDate?: string | Date
+	coverImageCredit?: string
+	headings: MarkdownHeading[]
+	slug: string
+	remarkPluginFrontmatter: Record<string, unknown>
+}
+
+const {
+	title,
+	description,
+	pubDate,
+	updatedDate,
+	coverImageCredit,
+	headings,
+	slug,
+	remarkPluginFrontmatter,
+} = Astro.props
+
+import BaseLayout from './BaseLayout.astro'
+import { Image } from 'astro:assets'
+import { Icon } from 'astro-icon/components'
+
+const blogImages: Record<string, () => Promise<unknown>> = import.meta.glob(
+	'/src/assets/blogimages/**/*.{jpeg,jpg,png,gif}'
+)
+
+const coverImagePath = `/src/assets/blogimages/${slug}/cover.jpg`
+
+// If a cover image exists in the assets, resolve it so <Image /> gets proper metadata
+let coverImage = null
+if (blogImages[coverImagePath]) {
+	try {
+		const mod = await blogImages[coverImagePath]()
+		const m = mod as unknown as { default?: unknown }
+		coverImage = m?.default ?? null
+	} catch {
+		coverImage = null
+	}
+}
+
+// Determine last modified value from plugin frontmatter defensively.
+// Plugins may attach different keys (modifiedTime, lastModified, etc.),
+// so try a few and only format if the date is valid.
+let lastModified = null
+const rawLast =
+	remarkPluginFrontmatter &&
+	(remarkPluginFrontmatter.lastModified ?? remarkPluginFrontmatter.modifiedTime)
+if (rawLast) {
+	const parsed = dayjs(String(rawLast))
+	if (parsed.isValid && parsed.isValid()) {
+		lastModified = parsed.utc().format('D MMM YYYY')
+	}
+}
+
+const pubDateObj = pubDate ? new Date(pubDate) : undefined
+const updatedDateObj = updatedDate ? new Date(updatedDate) : undefined
+---
+
+<BaseLayout title={title} description={description}>
+	<main>
+		<article>
+			<div
+				class="app-container flex flex-col lg:flex-row-reverse justify-between gap-8 py-24 relative"
+			>
+				<div class="md:w-1/4 relative">
+					<div class="sticky top-0 md:top-28 hidden lg:block">
+						<TableOfContents headings={headings} />
+					</div>
+				</div>
+				<div class="grow w-full md:max-w-[75ch]">
+					<div>
+						<h1 class="text-4xl sm:text-5xl leading-snug pt-12 font-bold">
+							{title}
+						</h1>
+						<div class="text-lg flex items-center gap-4 flex-wrap py-8">
+							<!-- Publish date -->
+							<span>
+								<Icon
+									name="mdi:calendar-month-outline"
+									class="inline-block text-primary dark:text-primary-dark"
+								/>
+								{pubDateObj && <FormattedDate date={pubDateObj} />}
+							</span>
+
+							<!-- Updated date -->
+							{
+								updatedDate && (
+									<span>
+										<Icon
+											name="mdi:calendar-refresh-outline"
+											class="inline-block text-primary dark:text-primary-dark"
+										/>
+										Last updated on{' '}
+										{updatedDateObj && <FormattedDate date={updatedDateObj} />}
+									</span>
+								)
+							}
+
+							<!-- Read time -->
+							<span>
+								<Icon
+									name="mdi:clock-time-four-outline"
+									class="inline-block text-primary dark:text-primary-dark"
+								/>
+								{remarkPluginFrontmatter.minutesRead}
+							</span>
+						</div>
+
+						{
+							coverImage && (
+								<div>
+									<Image
+										src={coverImage as unknown as ImageMetadata}
+										alt={title ?? ''}
+										class="rounded-lg"
+										loading="eager"
+										decoding="auto"
+										fetchpriority="high"
+									/>
+									{coverImageCredit && (
+										<p class="mt-2 mb-8 opacity-80 italic text-sm">
+											Image Credit: {coverImageCredit}
+										</p>
+									)}
+								</div>
+							)
+						}
+					</div>
+					<div
+						class="prose prose-neutral prose-lg md:prose-xl dark:prose-invert prose-img:rounded-xl prose-figure:text-center prose-img:mx-auto"
+					>
+						<slot />
+					</div>
+
+					<!-- Suggest edit -->
+					<div class="flex justify-between mt-16 gap-4 flex-wrap italic">
+						<a
+							href={`https://github.com/aherendeen/personal-astro-blog/edit/main/src/content/blog/${slug}.md`}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="hover:underline underline-offset-4 opacity-70 hover:opacity-100"
+							><Icon name="mdi:pencil-outline" class="inline-block" />
+							Suggest an edit
+						</a>
+						{
+							lastModified && (
+								<p class="opacity-70">Last modified: {lastModified}</p>
+							)
+						}
+					</div>
+				</div>
+			</div>
+		</article>
+	</main>
+</BaseLayout>
