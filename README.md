@@ -30,7 +30,6 @@ A minimal and professional theme for personal blog sites, built with the Astro f
 - **Content**: MDX for rich content
 - **Icons**: Astro Icon with Iconify integration
 - **Fonts**: Google Fonts (Inter, JetBrains Mono, Silkscreen)
-- **Build Tool**: Vite
 - **Linting**: ESLint with Astro and TypeScript rules
 - **Formatting**: Prettier with Astro plugin
 
